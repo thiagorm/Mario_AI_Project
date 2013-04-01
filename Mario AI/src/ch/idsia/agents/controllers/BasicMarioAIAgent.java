@@ -81,6 +81,8 @@ public void integrateObservation(Environment environment)
     this.marioCenter = environment.getMarioReceptiveFieldCenter();
     receptiveFieldWidth = environment.getReceptiveFieldWidth();
     receptiveFieldHeight = environment.getReceptiveFieldHeight();
+    
+    System.out.println("Mario Center: " + receptiveFieldWidth);
 
     // It also possible to use direct methods from Environment interface.
     //

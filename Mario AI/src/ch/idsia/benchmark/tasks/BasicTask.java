@@ -43,14 +43,14 @@ public boolean runOneEpisode()
             environment.performAction(action);
         }
         if(environment.isLevelFinished())
-        	environment.reset("-lco off -lb off -le off -lhb off -lg off -ltb off -lhs off -lc off -lde off -ll 30 -tl 990000 -fps 100");
+        	environment.reset("-lco off -lb off -le off -lhb off -lg off -ltb off -lhs off -lc off -lde off -ll 30 -tl 990000 -fps 100 -lf off");
     }
     environment.closeRecorder();
     environment.getEvaluationInfo().setTaskName(name);
     return true;
 }
 
-public void reset(CmdLineOptions cmdLineOptions)
+public void reset(CmdLineOptions cmdLineOptions)	
 {
     options = cmdLineOptions;
     agent = options.getAgent();
