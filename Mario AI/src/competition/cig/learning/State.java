@@ -27,6 +27,5 @@ public class State {
 		return numberActions;
 	}
 	
-	
 
 }

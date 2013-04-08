@@ -37,8 +37,13 @@ public class ReinforcementLearningAgent implements Agent{
 	private Policy policy;
 	boolean isWalk = false;
 	
+	FileClass fileClass;
 	
 	private double ground = -60;
+	private double tube = -85;
+	private double coin = 1;
+	private double square = -24;
+	private double floorHill = -62;
 
 	public void reset() 
 	{
@@ -50,6 +55,7 @@ public class ReinforcementLearningAgent implements Agent{
 		
 		this.grid = new Map();
 		reward = grid.getReward();
+		fileClass = new FileClass();
 	}
 	
 	public boolean[] getAction() 
@@ -64,9 +70,9 @@ public class ReinforcementLearningAgent implements Agent{
 		
 		if(isWalk)
 		{
-			this.action = verifyHigherAction(grid.map[i][j]);
+			this.action = this.verifyHigherAction(grid.map[i][j]);
 			
-			array_action = verifyAction(action);
+			array_action = this.verifyAction(action);
 			array_action[Mario.KEY_SPEED] = true;
 		}
 		
@@ -86,6 +92,9 @@ public class ReinforcementLearningAgent implements Agent{
 				policy.setQValue(grid.map[i][j], action, newQValue);
 				
 				array_action = verifyAction(action);
+				
+				if(action != 3)//CUIDADO
+					array_action[Mario.KEY_RIGHT] = true;
 			}
 			
 			if(this.j ==  grid.getCol()-1)
@@ -94,7 +103,10 @@ public class ReinforcementLearningAgent implements Agent{
 			}
 			
 			if(count == max_episodios)
+			{
 				isWalk = true;
+				fileClass.writeFile(grid);
+			}
 		}
 		
 		
@@ -185,6 +197,7 @@ public class ReinforcementLearningAgent implements Agent{
 			if(state.getActions()[i] > maior)
 			{
 				action = i;
+				maior = state.getActions()[i];
 			}
 		}
 		
@@ -213,14 +226,14 @@ public class ReinforcementLearningAgent implements Agent{
 			case 2://RIGHT
 				if( i > 0 && j < grid.getCol()-1)
 				{
-					if(viewMatriz[iViewMatriz][jViewMatriz+1] != ground)// &&isMarioAbleToJump)//TESTE
+					if(viewMatriz[iViewMatriz][jViewMatriz+1] != ground &&isMarioAbleToJump)//CUIDADO
 						nextState = grid.map[i][j+1];
 				}
 				break;
 			case 3://LEFT
 				if(j > 0 && j < grid.getCol()-1)
 				{
-					if(viewMatriz[iViewMatriz][jViewMatriz-1] != ground)// && isMarioAbleToJump)//TESTE
+					if(viewMatriz[iViewMatriz][jViewMatriz-1] != ground && isMarioAbleToJump)//CUIDADO
 						nextState = grid.map[i][j-1];
 				}
 				break;
@@ -231,13 +244,14 @@ public class ReinforcementLearningAgent implements Agent{
 	
 	private boolean[] verifyAction(int action)
 	{
+		array_action[Mario.KEY_SPEED] = true;
 		switch(action)
 		{
 			case 0://UP
-				array_action[Mario.KEY_RIGHT] = true;//CUIDADO
+				array_action[Mario.KEY_RIGHT] = false;
 				array_action[Mario.KEY_DOWN] = false;
 				array_action[Mario.KEY_LEFT] = false;
-				array_action[Mario.KEY_SPEED] = false;
+				//array_action[Mario.KEY_SPEED] = false;
 				array_action[Mario.KEY_JUMP] = isMarioAbleToJump || !isMarioOnGround;
 				break;
 			case 1://STAY
@@ -252,43 +266,43 @@ public class ReinforcementLearningAgent implements Agent{
 				array_action[Mario.KEY_LEFT] = false;
 				array_action[Mario.KEY_JUMP] = false;
 				array_action[Mario.KEY_DOWN] = false;
-				array_action[Mario.KEY_SPEED] = false;
+				//array_action[Mario.KEY_SPEED] = false;
 				array_action[Mario.KEY_RIGHT] = true;
 				
-				jumpRandom = rand.nextInt(2) + 1;
-				
-				if(jumpRandom == 1)
-				{
-					array_action[Mario.KEY_JUMP] = isMarioAbleToJump || !isMarioOnGround;
-				}
-				
-				walkRandom = rand.nextInt(2) + 1;
-				
-				if(walkRandom == 1)
-				{
-					array_action[Mario.KEY_SPEED] = true;
-				}
+//				jumpRandom = rand.nextInt(2) + 1;
+//				
+//				if(jumpRandom == 1)
+//				{
+//					array_action[Mario.KEY_JUMP] = isMarioAbleToJump || !isMarioOnGround;
+//				}
+//				
+//				walkRandom = rand.nextInt(2) + 1;
+//				
+//				if(walkRandom == 1)
+//				{
+//					array_action[Mario.KEY_SPEED] = true;
+//				}
 				break;
 			case 3://LEFT
 				array_action[Mario.KEY_JUMP] = false;
 				array_action[Mario.KEY_DOWN] = false;
 				array_action[Mario.KEY_RIGHT] = false;
-				array_action[Mario.KEY_SPEED] = false;
+				//array_action[Mario.KEY_SPEED] = false;
 				array_action[Mario.KEY_LEFT] = true;
 				
-				jumpRandom = rand.nextInt(2) + 1;
-				
-				if(jumpRandom == 1)
-				{
-					array_action[Mario.KEY_JUMP] = isMarioAbleToJump || !isMarioOnGround;	
-				}
-				
-				walkRandom = rand.nextInt(2) + 1;
-				
-				if(walkRandom == 1)
-				{
-					array_action[Mario.KEY_SPEED] = true;
-				}
+//				jumpRandom = rand.nextInt(2) + 1;
+//				
+//				if(jumpRandom == 1)
+//				{
+//					array_action[Mario.KEY_JUMP] = isMarioAbleToJump || !isMarioOnGround;	
+//				}
+//				
+//				walkRandom = rand.nextInt(2) + 1;
+//				
+//				if(walkRandom == 1)
+//				{
+//					array_action[Mario.KEY_SPEED] = true;
+//				}
 				break;
 		}
 		

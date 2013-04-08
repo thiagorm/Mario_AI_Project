@@ -8,7 +8,7 @@ public class Map {
 	public State[][] map;
 	private double[] max_state = {100, 100, 100, 100};
 	
-	private double max_reward = 100, reward = -3;
+	private double max_reward = 100, reward = -0.5;
 
 	public Map()
 	{
@@ -18,7 +18,7 @@ public class Map {
 		{
 			for(int j = 0; j < this.col; j++)
 			{
-				System.out.println(j);
+//				System.out.println(j);
 				map[i][j] = new State();
 				if(j == this.col-1)
 					map[i][j].setActions(max_state);

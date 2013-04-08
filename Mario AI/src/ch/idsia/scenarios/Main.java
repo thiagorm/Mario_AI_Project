@@ -4,6 +4,8 @@ import ch.idsia.agents.Agent;
 import ch.idsia.agents.AgentsPool;
 import ch.idsia.agents.controllers.ForwardAgent;
 import ch.idsia.agents.controllers.ForwardJumpingAgent;
+import ch.idsia.benchmark.mario.environments.Environment;
+import ch.idsia.benchmark.mario.environments.MarioEnvironment;
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.CmdLineOptions;
 
@@ -17,8 +19,8 @@ public static void main(String[] args)
 {
 //        final String argsString = "-vis on";
     final CmdLineOptions cmdLineOptions = new CmdLineOptions(args);
-//        final Environment environment = new MarioEnvironment();
-    //final Agent agent = new ForwardJumpingAgent();
+ //   final Environment environment = new MarioEnvironment();
+    final Agent agent = new ForwardJumpingAgent();
 //        final Agent agent = cmdLineOptions.getAgent();
 //       final Agent a = AgentsPool.load("ch.idsia.controllers.agents.controllers.ForwardJumpingAgent");
     final BasicTask basicTask = new BasicTask(cmdLineOptions);
