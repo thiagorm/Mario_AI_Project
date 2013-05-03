@@ -21,9 +21,18 @@ protected CmdLineOptions options;
 private long COMPUTATION_TIME_BOUND = 42; // stands for prescribed  FPS 24.
 private String name = getClass().getSimpleName();
 
+//CUIDADO
+int maxTime = Integer.MAX_VALUE;
+private String enviromentAtributes =  "-lco on -lb on -le off -lhb on -lg on -ltb on -lhs on -lc on -lde on -lf on -ll 40 -tl " +  maxTime + " -fps 24 -gv off"; 
+
 public BasicTask(CmdLineOptions cmdLineOptions)
 {
     this.setOptions(cmdLineOptions);
+}
+
+public BasicTask()
+{
+
 }
 
 /**
@@ -43,7 +52,7 @@ public boolean runOneEpisode()
             environment.performAction(action);
         }
         if(environment.isLevelFinished())
-        	environment.reset("-lco off -lb off -le off -lhb off -lg off -ltb off -lhs off -lc off -lde off -ll 30 -tl 990000 -fps 100 -lf off");
+        	environment.reset(enviromentAtributes);
     }
     environment.closeRecorder();
     environment.getEvaluationInfo().setTaskName(name);
@@ -55,6 +64,14 @@ public void reset(CmdLineOptions cmdLineOptions)
     options = cmdLineOptions;
     agent = options.getAgent();
     environment.reset(cmdLineOptions);
+    agent.reset();
+}
+
+public void reset(Agent agent)	
+{
+    //options = cmdLineOptions;
+    this.agent = agent;
+    environment.reset(enviromentAtributes);
     agent.reset();
 }
 

@@ -3,12 +3,13 @@ package competition.cig.learning;
 public class Map {
 	
 	private final int lines = 16;
-	private final int col = 31;
+	private final int col = 41;
 	
 	public State[][] map;
 	private double[] max_state = {100, 100, 100, 100};
+	//private double[] min_state = {-100, -100, -100, -100};
 	
-	private double max_reward = 100, reward = -0.5;
+	private double max_reward = 100, reward = -0.5, min_reward = -100;
 
 	public Map()
 	{
@@ -20,6 +21,8 @@ public class Map {
 			{
 //				System.out.println(j);
 				map[i][j] = new State();
+				//if(j == 0)
+					//map[i][j].setActions(min_state);
 				if(j == this.col-1)
 					map[i][j].setActions(max_state);
 			}

@@ -1,5 +1,6 @@
 package competition.cig.learning;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import ch.idsia.agents.Agent;
@@ -10,7 +11,7 @@ public class ReinforcementLearningAgent implements Agent{
 
 	private String name = "ReinforcementAgent";
 	
-	private final int max_episodios = 800;
+	private final int max_episodios = 5000;
 	
 	boolean[] array_action = new boolean[Environment.numberOfButtons];
 	
@@ -27,23 +28,30 @@ public class ReinforcementLearningAgent implements Agent{
 	private int i = 0, j = 0, iViewMatriz = 0, jViewMatriz = 0;
 	
 	private Random rand;
-	private int random = 0, jumpRandom = 0, walkRandom = 0, eGreedy= 0, count = 0;
+	private int random = 0, jumpRandom = 0, walkRandom = 0, count = 0;
+	double eGreedy = 0.3, randomEgreedy = 0;
 
 	private Map grid;
 	private double alfa, gamma, reward;
 	private double qValue = 0, maxQValue = 0, newQValue = 0;
 	private State nextState;
-	int action = 0;
+	int action = -1;
 	private Policy policy;
 	boolean isWalk = false;
 	
-	FileClass fileClass;
-	
+	//OBSTACLES OF ENVIROMENT
 	private double ground = -60;
 	private double tube = -85;
 	private double coin = 1;
 	private double square = -24;
 	private double floorHill = -62;
+	
+	//FILE
+	FileClass fileClass;
+	ArrayList<Double> list = new ArrayList<Double>();
+	double[] array;
+	int countList = 0, countArray = 0;
+	boolean activeReadFile = true;//ACTIVE TO THE READ FILE
 
 	public void reset() 
 	{
@@ -51,11 +59,14 @@ public class ReinforcementLearningAgent implements Agent{
 		this.policy = new Policy();
 		this.alfa = 1;
 		this.gamma = 1;
-		this.eGreedy = 2;
 		
 		this.grid = new Map();
+		this.array = new double[grid.map[0][0].getNumberActions()];
 		reward = grid.getReward();
 		fileClass = new FileClass();
+		
+		//if read file isn't active, Comment
+		this.readFile();
 	}
 	
 	public boolean[] getAction() 
@@ -67,8 +78,7 @@ public class ReinforcementLearningAgent implements Agent{
 		array_action[Mario.KEY_RIGHT] = false;
 		array_action[Mario.KEY_SPEED] = false;
 		
-		
-		if(isWalk)
+		if(isWalk || activeReadFile)
 		{
 			this.action = this.verifyHigherAction(grid.map[i][j]);
 			
@@ -77,12 +87,12 @@ public class ReinforcementLearningAgent implements Agent{
 		}
 		
 		
-		if(!isWalk)
+		if(!isWalk && !activeReadFile)
 		{
 			this.action = this.selectAction(grid.map[i][j]);
 			nextState = this.selectNextState(this.action);
 			
-			if(nextState != null)
+			if(action != -1 && nextState != null)
 			{
 				qValue = policy.getQValue(grid.map[i][j], action);
 				maxQValue = policy.getMaxQValue(nextState);
@@ -91,10 +101,10 @@ public class ReinforcementLearningAgent implements Agent{
 			
 				policy.setQValue(grid.map[i][j], action, newQValue);
 				
+				//CUIDADO
+				//if(action != 3)
+					//array_action[Mario.KEY_RIGHT] = true;
 				array_action = verifyAction(action);
-				
-				if(action != 3)//CUIDADO
-					array_action[Mario.KEY_RIGHT] = true;
 			}
 			
 			if(this.j ==  grid.getCol()-1)
@@ -171,19 +181,24 @@ public class ReinforcementLearningAgent implements Agent{
 	{
 		int action = 0;
 		
-//		eGreedy = rand.nextInt(2) + 1;
-//		
+		randomEgreedy = rand.nextDouble();//(Math.random()*1);
+		
+		if(randomEgreedy > eGreedy)
+			action = this.rand.nextInt(4);
+		else
+			action = this.verifyHigherIndex(state);
+		
 //		switch(eGreedy)
 //		{
 //			case 1:
-				action = rand.nextInt(4);
+//				action = rand.nextInt(4);
 //				break;
 //				
 //			case 2: 
-//				action = verifyHigherAction(state);
+//				action = this.verifyHigherIndex(state);
 //				break;
 //		}
-//		
+		
 		return action;
 	}
 	
@@ -204,6 +219,36 @@ public class ReinforcementLearningAgent implements Agent{
 		return action;
 	}
 	
+	private int verifyHigherIndex(State state)
+	{
+		int action = 1;
+		double maior = 0;
+		
+		maior = state.getActions()[0];
+		
+		for(int i = 1; i < state.getNumberActions(); i++)
+		{
+			if(state.getActions()[i] > maior && maior != state.getActions()[i])
+			{
+				maior = state.getActions()[i];
+				action = i;
+			}
+			else if(state.getActions()[i] == maior)
+			{
+				action = -1;
+			}
+			
+		}
+		
+		//CUIDADO
+		//if(action == -1)
+		//{
+			//action = this.rand.nextInt(4);
+		//}
+		
+		return action;
+	}
+	
 	private State selectNextState(int action)
 	{
 		State nextState = null;
@@ -219,21 +264,21 @@ public class ReinforcementLearningAgent implements Agent{
 			case 1://DOWN
 				if( i > 0 && j < grid.getCol()-1)
 				{
-					if(viewMatriz[iViewMatriz+1][jViewMatriz] != ground)
+					if(viewMatriz[iViewMatriz+1][jViewMatriz] != ground && viewMatriz[iViewMatriz+1][jViewMatriz] != tube && viewMatriz[iViewMatriz+1][jViewMatriz] != square)
 							nextState = grid.map[i+1][j];
 				}
 				break;
 			case 2://RIGHT
 				if( i > 0 && j < grid.getCol()-1)
 				{
-					if(viewMatriz[iViewMatriz][jViewMatriz+1] != ground &&isMarioAbleToJump)//CUIDADO
+					if((viewMatriz[iViewMatriz][jViewMatriz+1] != ground && viewMatriz[iViewMatriz][jViewMatriz+1] != tube && viewMatriz[iViewMatriz][jViewMatriz+1] != square) && isMarioAbleToJump)//CUIDADO
 						nextState = grid.map[i][j+1];
 				}
 				break;
 			case 3://LEFT
 				if(j > 0 && j < grid.getCol()-1)
 				{
-					if(viewMatriz[iViewMatriz][jViewMatriz-1] != ground && isMarioAbleToJump)//CUIDADO
+					if((viewMatriz[iViewMatriz][jViewMatriz-1] != ground && viewMatriz[iViewMatriz][jViewMatriz-1] != tube && viewMatriz[iViewMatriz][jViewMatriz-1] != square) && isMarioAbleToJump)//CUIDADO
 						nextState = grid.map[i][j-1];
 				}
 				break;
@@ -244,7 +289,6 @@ public class ReinforcementLearningAgent implements Agent{
 	
 	private boolean[] verifyAction(int action)
 	{
-		array_action[Mario.KEY_SPEED] = true;
 		switch(action)
 		{
 			case 0://UP
@@ -305,7 +349,7 @@ public class ReinforcementLearningAgent implements Agent{
 //				}
 				break;
 		}
-		
+
 		return array_action;
 	}
 	
@@ -314,6 +358,28 @@ public class ReinforcementLearningAgent implements Agent{
 			System.out.println(grid.map[i][j].getActions()[0] + " " + grid.map[i][j].getActions()[1] + " " + grid.map[i][j].getActions()[2] + " " + grid.map[i][j].getActions()[3]);
 			System.out.println();
 
+	}
+	
+	private void readFile()
+	{
+		list = fileClass.readerFile();
+		
+		for(int i = 0; i < grid.getLines(); i++)
+		{
+			for(int j = 0; j < grid.getCol(); j++)
+			{
+				while(countArray != 4)
+				{
+					array[countArray] = list.get(countList);
+					countArray++;
+					countList++;
+				}
+				
+				countArray = 0;
+				
+				grid.map[i][j].setActions(array.clone());
+			}
+		}
 	}
 
 }

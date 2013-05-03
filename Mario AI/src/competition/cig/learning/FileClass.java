@@ -19,7 +19,7 @@ public class FileClass {
 	
 	public FileClass()
 	{
-		this.file = new File("C:/Users/Thiago/workspace/Mario AI 2010/bin/qValuesMatriz.txt");
+		this.file = new File("C:/files/qValuesMatriz.txt");
 
 	}
 	

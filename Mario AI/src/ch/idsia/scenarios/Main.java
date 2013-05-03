@@ -1,7 +1,10 @@
 package ch.idsia.scenarios;
 
+import competition.cig.learning.ReinforcementLearningAgent;
+
 import ch.idsia.agents.Agent;
 import ch.idsia.agents.AgentsPool;
+import ch.idsia.agents.LearningAgent;
 import ch.idsia.agents.controllers.ForwardAgent;
 import ch.idsia.agents.controllers.ForwardJumpingAgent;
 import ch.idsia.benchmark.mario.environments.Environment;
@@ -18,12 +21,12 @@ public final class Main
 public static void main(String[] args)
 {
 //        final String argsString = "-vis on";
-    final CmdLineOptions cmdLineOptions = new CmdLineOptions(args);
- //   final Environment environment = new MarioEnvironment();
-    final Agent agent = new ForwardJumpingAgent();
+//    final CmdLineOptions cmdLineOptions = new CmdLineOptions(args);
+//    final Environment environment = new MarioEnvironment();
+    final Agent agent = new ReinforcementLearningAgent();
 //        final Agent agent = cmdLineOptions.getAgent();
-//       final Agent a = AgentsPool.load("ch.idsia.controllers.agents.controllers.ForwardJumpingAgent");
-    final BasicTask basicTask = new BasicTask(cmdLineOptions);
+//        final Agent a = AgentsPool.load("ch.idsia.controllers.agents.controllers.ForwardJumpingAgent");
+    final BasicTask basicTask = new BasicTask();
 //        for (int i = 0; i < 10; ++i)
 //        {
 //            int seed = 0;
@@ -31,7 +34,7 @@ public static void main(String[] args)
 //            {
 //                cmdLineOptions.setLevelDifficulty(i);
 //                cmdLineOptions.setLevelRandSeed(seed++);
-    basicTask.reset(cmdLineOptions);
+    basicTask.reset(agent);
     basicTask.runOneEpisode();
     System.out.println(basicTask.getEnvironment().getEvaluationInfoAsString());
 //            } while (basicTask.getEnvironment().getEvaluationInfo().marioStatus != Environment.MARIO_STATUS_WIN);
